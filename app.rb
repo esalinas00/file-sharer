@@ -52,7 +52,7 @@ class FileSharingAPI < Sinatra::Base
       if new_file.save
         logger.ingo "NEW FILE"
       else
-        halt 400 "Could not store a file: #{new_file.id}"
+        halt 400, "Could not store a file: #{new_file.id}"
       end
 
       redirect '/api/v1/files/' + new_config.id + '.json'
@@ -60,7 +60,6 @@ class FileSharingAPI < Sinatra::Base
       status 400
       logger.info "FAILED to create new file: #{e.inspect}"
     end
-
 
   end
 
