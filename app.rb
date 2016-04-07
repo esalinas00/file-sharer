@@ -1,10 +1,15 @@
 require 'sinatra'
 require 'json'
+require_relative 'models/file'
 
 class FileSharingAPI < Sinatra::Base
 
+  before do
+    SimpleFile.setup
+  end
+
   get '/?' do
-    "File Sharer Webservice is up and running at api/v1/"
+    "File Sharer Webservice is up and running at api/v1"
   end
 
   get '/api/v1/?' do
@@ -12,31 +17,51 @@ class FileSharingAPI < Sinatra::Base
     "Version 1.0 our our api"
   end
 
-  get '/api/v1/files/:username/file/:file_id/?' do
-    # TODO return specific file
-    "#{params['username']} - #{params['file_id']}"
-  end
-
-  get '/api/v1/files/:username/?' do
+  get '/api/v1/files/?' do
     # TODO return all users' files
-    params['username']
+    content_type 'application/json'
+    file_list = SimpleFile.all
+
+    { file_list: file_list }.to_json
   end
 
-  post '/api/v1/files/?' do
+  get '/api/v1/files/:id.json' do
+    # TODO return specific file
     content_type 'application/json'
-    new_data = JSON.parse(request.body.read)
-    owner = new_data.owner
-    file_name = new_data.file_name
-    # TODO create files
-    JSON.generate(new_data)
+
+    begin
+      { file: SimpleFile.find(params[:id]) }.to_json
+    rescue => e
+      status 404
+      logger.info "FAILED to GET file: #{e.inspect}"
+    end
   end
 
-  put '/api/v1/files/?' do
+  get '/api/v1/files/:id/attribute' do
+    # TODO return a particular attribute of a file
     content_type 'application/json'
-    new_data = JSON.parse(request.body.read)
-    owner = new_data.owner
-    file_name = new_data.file_name
-    # TODO update files
-    JSON.generate(new_data)
+
   end
+
+  post '/api/v1/files' do
+    content_type 'application/json'
+
+    begin
+      new_data = JSON.parse(request.body.read)
+      new_file = file.new(new_data)
+      if new_file.save
+        logger.ingo "NEW FILE"
+      else
+        halt 400 "Could not store a file: #{new_file.id}"
+      end
+
+      redirect '/api/v1/files/' + new_config.id + '.json'
+    rescue => e
+      status 400
+      logger.info "FAILED to create new file: #{e.inspect}"
+    end
+
+
+  end
+
 end
