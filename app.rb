@@ -48,14 +48,14 @@ class FileSharingAPI < Sinatra::Base
 
     begin
       new_data = JSON.parse(request.body.read)
-      new_file = file.new(new_data)
+      new_file = SimpleFile.new(new_data)
       if new_file.save
-        logger.ingo "NEW FILE"
+        logger.info "NEW FILE"
       else
         halt 400, "Could not store a file: #{new_file.id}"
       end
 
-      redirect '/api/v1/files/' + new_config.id + '.json'
+      redirect '/api/v1/files/' + new_file.id + '.json'
     rescue => e
       status 400
       logger.info "FAILED to create new file: #{e.inspect}"
