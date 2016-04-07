@@ -1,4 +1,5 @@
 require 'json'
+require 'base64'
 
 class SimpleFile
   ROOT_DIR = Dir.getwd.freeze
@@ -8,7 +9,7 @@ class SimpleFile
 
   def initialize(new_file)
     @id = new_file['id'] || new_id
-    @file_extension = new_file['extension']
+    @file_extension = new_file['file_extension']
     @file_name = new_file['file_name']
     @description = new_file['description']
     @remark = new_file['remark']
@@ -43,8 +44,8 @@ class SimpleFile
   end
 
   def self.all
-    Dir.glob(STORE_DIR + '*.*').map do |filename|
-      filename.match(%r{public\/(.*)})[1]
+    Dir.glob(STORE_DIR + '*').map do |filename|
+      filename.match(%r{(.*)})[1]
     end
   end
 
