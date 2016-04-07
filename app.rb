@@ -1,7 +1,12 @@
 require 'sinatra'
 require 'json'
+require_relative 'models/simple_file'
 
 class FileSharingAPI < Sinatra::Base
+
+  before do
+    SimpleFile.setup
+  end
 
   get '/?' do
     "File Sharer Webservice is up and running at api/v1/"
