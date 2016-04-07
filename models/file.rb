@@ -6,7 +6,7 @@ class SimpleFile
 
   attr_accessor :id, :file_extension, :file_name, :description, :remark
 
-  def initialize new_file
+  def initialize(new_file)
     @id = new_file['id'] || new_id
     @file_extension = new_file['extension']
     @file_name = new_file['file_name']
