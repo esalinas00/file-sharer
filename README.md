@@ -4,13 +4,10 @@ Secure File Storage and Sharing
 
 ### Routes
 
-- Use curl in your terminal for the POST requests
+- GET `api/v1/files`: returns a json of all file IDs.
+- GET `api/v1/files/:id.json`: returns a json of all information about a file with given ID.
+- POST `api/v1/files`: create a new file information with given json information about it.
 
-```
-curl -v -H "Accept: application/json" -H "Content-type: application/json" -X POST \
--d "{\"owner\": \"user1\", \"file_name\": \"README.md\"}" \
-http://localhost:4567/api/v1/files/
-```
 
 ## Install
 
