@@ -8,8 +8,13 @@ Secure File Storage and Sharing
 
 - GET `/`: root route
 
+#### User Routes
 
-#### files Routes
+- GET api/v1/users/: returns a json list of all users
+- GET api/v1/users/[ID]: returns a json of all information about a user
+- POST api/v1/users/: creates a new user
+
+#### File Routes
 
 - GET `api/v1/files`: returns a json of all file IDs.
 - GET `api/v1/files/:id.json`: returns a json of all information about a file with given ID.
