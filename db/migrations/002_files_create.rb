@@ -2,7 +2,7 @@ require 'sequel'
 
 Sequel.migration do
   change do
-    create_table(:files) do
+    create_table(:simple_files) do
       primary_key :id
       foreign_key :user_id
 
