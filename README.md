@@ -16,9 +16,10 @@ Secure File Storage and Sharing
 
 #### File Routes
 
-- GET `api/v1/files`: returns a json of all file IDs.
-- GET `api/v1/files/:id.json`: returns a json of all information about a file with given ID.
-- POST `api/v1/files`: create a new file information with given json information about it.
+- GET `api/v1/users/:username/files`: returns a json of all files for a user
+- GET `api/v1/users/:username/files/:id.json`: returns a json of all information about a file
+- GET `api/v1/users/:username/files/:id/document`: returns a base64 document with a file document
+- POST `api/v1/users/:username/files`: creates a new file for a user
 
 
 ## Install
