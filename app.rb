@@ -10,6 +10,10 @@ class FileSharingAPI < Sinatra::Base
     @request_url = URI.join(host_url, request.path.to_s)
   end
 
+  configure :production, :development do
+    enable :logging
+  end
+
   get '/?' do
     "File Sharer Webservice is up and running at api/v1"
   end
@@ -30,8 +34,10 @@ class FileSharingAPI < Sinatra::Base
     content_type 'application/json'
 
     username = params[:username]
-    user = User[username]
-    files = user ? User[username].files : []
+    user = User.where(username: username)
+               .first
+
+    files = user ? User[user.id].simple_files : []
 
     if user
       JSON.pretty_generate(data: user, relationships: files)
@@ -49,56 +55,86 @@ class FileSharingAPI < Sinatra::Base
       halt 400
     end
 
-    new_location = URI.join(@request_url.to_s + '/', saved_user.id.to_s).to_s
+    new_location = URI.join(@request_url.to_s + '/', saved_user.username.to_s).to_s
 
     status 201
     headers('Location' => new_location)
   end
 
-
-  get '/api/v1/files/?' do
-    # TODO return all users' files
+  get '/api/v1/users/:username/files/?' do
+    # returns a json of all files for a user
     content_type 'application/json'
 
-    JSON.pretty_generate(data: SimpleFile.all)
+    username = params[:username]
+    user = User.where(username: username)
+               .first
+
+    JSON.pretty_generate(data: user.simple_files)
   end
 
-  get '/api/v1/files/:id.json' do
-    # TODO return specific file
+  get '/api/v1/users/:username/files/:id.json/?' do
+    # Returns a json of all information about a file
     content_type 'application/json'
+
+    username = params[:username]
+    user_id = User.where(username: username)
+                  .first
+                  .id
 
     begin
-      { file: SimpleFile.find(params[:id]) }.to_json
-    rescue => e
-      status 404
-      logger.info "FAILED to GET file: #{e.inspect}"
-    end
-  end
-
-  get '/api/v1/files/:id/attribute' do
-    # TODO return a particular attribute of a file
-    content_type 'application/json'
-
-  end
-
-  post '/api/v1/files' do
-    content_type 'application/json'
-
-    begin
-      new_data = JSON.parse(request.body.read)
-      new_file = SimpleFile.new(new_data)
-      if new_file.save
-        logger.info "NEW FILE"
-      else
-        halt 400, "Could not store a file: #{new_file.id}"
-      end
-
-      redirect '/api/v1/files/' + new_file.id + '.json'
+      doc_url = URI.join(@request_url.to_s + '/', 'document')
+      simple_file = SimpleFile
+                      .where(user_id: user_id, id: params[:id])
+                      .first
+      halt(404, 'File not found') unless simple_file
+      JSON.pretty_generate(data: {
+                             file: simple_file,
+                             links: { document: doc_url }
+                           })
     rescue => e
       status 400
-      logger.info "FAILED to create new file: #{e.inspect}"
+      logger.info "FAILED to process GET file request: #{e.inspect}"
+      e.inspect
+    end
+  end
+
+  get '/api/v1/users/:username/files/:id/document' do
+    # Returns a text/plain document with a configuration document
+    content_type 'text/plain'
+
+    username = params[:username]
+    user_id = User.where(username: username)
+                  .first
+                  .id
+    begin
+      # Return raw data
+      SimpleFile
+        .where(user_id: user_id, id: params[:id])
+        .first
+        .base64_document
+    rescue => e
+      status 404
+      e.inspect
+    end
+  end
+
+  post '/api/v1/users/:username/files/?' do
+    # Creates a new file for a user
+    # TODO Should upload here
+    username = params[:username]
+    begin
+      new_data = JSON.parse(request.body.read)
+      user = User.where(username: username)
+                 .first
+      saved_file = user.add_simple_file(new_data)
+    rescue => e
+      logger.info "FAILED to create new config: #{e.inspect}"
+      halt 400
     end
 
+    status 201
+    new_location = URI.join(@request_url.to_s + '/', saved_file.id.to_s).to_s
+    headers('Location' => new_location)
   end
 
 end
