@@ -1,60 +1,31 @@
 require 'json'
 require 'base64'
+require 'sequel'
 
-class SimpleFile
-  ROOT_DIR = Dir.getwd.freeze
-  STORE_DIR = 'db/'.freeze
-
-  attr_accessor :id, :file_extension, :file_name, :description, :remark
-
-  def initialize(new_file)
-    @id = new_file['id'] || new_id
-    @file_extension = new_file['file_extension']
-    @file_name = new_file['file_name']
-    @description = new_file['description']
-    @remark = new_file['remark']
-  end
-
-  def new_id
-    Base64.urlsafe_encode64(Digest::SHA256.digest(Time.now.to_s))[0..9]
-  end
+# Holds a full configuration file's information
+class File < Sequel::Model
+  many_to_one :users
 
   def to_json(options = {})
-    JSON({ id: @id,
-           file_extension: @file_extension,
-           file_name: @file_name,
-           description: @description,
-           remark: @remark },
-          options)
+    JSON({  type: 'file',
+            id: id,
+            data: {
+              file_name: filename,
+              description: description,
+              file_extension: file_extension,
+              remark: remark,
+              base64_document: base64_document
+            }
+          },
+         options)
   end
 
-  def save
-    File.open(STORE_DIR + @id, 'w') do |file|
-      file.write(to_json)
-    end
-
-    true
-  rescue
-    false
+  def document
+    Base64.strict_decode64 base64_document
   end
-
-  def self.find(find_id)
-    found_file = File.read(STORE_DIR + find_id)
-    SimpleFile.new JSON.parse(found_file)
-  end
-
-  def self.all
-    Dir.glob(STORE_DIR + '*').map do |filename|
-      filename.match(%r{(.*)})[1]
-    end
-  end
-
-  def self.setup
-    Dir.mkdir(STORE_DIR, 0760) unless Dir.exist? STORE_DIR
-  end
-
-  def self.file_exist?(owner, file_name)
-    File.exist? ("%s%s/%s" % [STORE_DIR,owner,file_name])
-  end
-
 end
+
+# TODO: implement a more complex primary key?
+# def new_id
+#   Base64.urlsafe_encode64(Digest::SHA256.digest(Time.now.to_s))[0..9]
+# end
