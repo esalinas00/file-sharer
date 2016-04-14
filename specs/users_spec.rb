@@ -42,6 +42,12 @@ describe 'Testing Project resource routes' do
 
       get "/api/v1/users/JohnDoe"
       _(last_response.status).must_equal 200
+
+      results = JSON.parse(last_response.body)
+      _(results['data']['attributes']['username']).must_equal new_user.username
+      3.times do |i|
+        _(results['relationships'][i]['id']).must_equal new_files[i].id
+      end
     end
 
     it 'SAD: should not find non-existent users' do
