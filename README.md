@@ -10,9 +10,9 @@ Secure File Storage and Sharing
 
 #### User Routes
 
-- GET api/v1/users/: returns a json list of all users
-- GET api/v1/users/[ID]: returns a json of all information about a user
-- POST api/v1/users/: creates a new user
+- GET `api/v1/users/`: returns a json list of all users
+- GET `api/v1/users/:username`: returns a json of all information about a user
+- POST `api/v1/users/`: creates a new user
 
 #### File Routes
 
