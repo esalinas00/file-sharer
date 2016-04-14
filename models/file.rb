@@ -3,7 +3,7 @@ require 'base64'
 require 'sequel'
 
 # Holds a full configuration file's information
-class File < Sequel::Model
+class SimpleFile < Sequel::Model
   many_to_one :users
 
   def to_json(options = {})
