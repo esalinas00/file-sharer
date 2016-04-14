@@ -62,35 +62,35 @@ describe 'Testing File resource routes' do
   end
 
   describe 'Getting files' do
-    # it 'HAPPY: should find existing file' do
-    #   f = {
-    #     filename: 'Demo Configuration',
-    #     description: 'test description',
-    #     base64_document: 'test document',
-    #     file_extension: 'test extension',
-    #     remark: 'test remark',
-    #
-    #    }
-    #   file = User.create(username: 'tester', email: 'test@gmail.com')
-    #              .add_simple_file(f)
-    #
-    #   get "/api/v1/users/#{file.user_id}/files/#{file.id}.json"
-    #   _(last_response.status).must_equal 200
-    #   parsed_config = JSON.parse(last_response.body)['data']['file']
-    #   _(parsed_config['type']).must_equal 'file'
-    # end
+  #   it 'HAPPY: should find existing file' do
+  #     f = {
+  #       filename: 'Demo Configuration',
+  #       description: 'test description',
+  #       base64_document: 'test document',
+  #       file_extension: 'test extension',
+  #       remark: 'test remark',
+  #
+  #      }
+  #     file = User.create(username: 'tester', email: 'test@gmail.com')
+  #                .add_simple_file(f)
+  #
+  #     get "/api/v1/users/#{file.user_id}/files/#{file.id}.json"
+  #     _(last_response.status).must_equal 200
+  #     parsed_config = JSON.parse(last_response.body)['data']['file']
+  #     _(parsed_config['type']).must_equal 'file'
+  #   end
 
     it 'SAD: should not find non-existant file and user' do
-      user_id = invalid_id(User)
+      username = invalid_id(User)
       file_id = invalid_id(SimpleFile)
-      get "/api/v1/users/#{user_id}/files/#{file_id}"
+      get "/api/v1/users/#{username}/files/#{file_id}"
       _(last_response.status).must_equal 404
     end
 
     it 'SAD: should not find non-existant file for existing user' do
-      user_id = User.create(username: 'tester').id
+      username = User.create(username: 'tester', email:'test@gmail.com').id
       file_id = invalid_id(SimpleFile)
-      get "/api/v1/users/#{user_id}/files/#{file_id}"
+      get "/api/v1/users/#{username}/files/#{file_id}"
       _(last_response.status).must_equal 404
     end
   end
