@@ -1,7 +1,23 @@
-# A sample Gemfile
 source "https://rubygems.org"
 
-gem 'sinatra','~>1.4.7'
-gem 'thin','~>1.6.4'
-gem 'json','~>1.8.1'
-# gem "rails"
+gem 'sinatra'
+gem 'thin'
+gem 'json'
+gem 'sequel'
+
+group :development do
+  gem 'rerun'
+  gem 'tux'
+  gem 'hirb'
+end
+
+group :test do
+  gem 'minitest'
+  gem 'rack'
+  gem 'rack-test'
+  gem 'rake'
+end
+
+group :development, :test do
+  gem 'sqlite3'
+end
