@@ -1,11 +1,13 @@
 require 'sinatra'
 require 'json'
-require_relative 'models/file'
+require_relative 'config/environments'
+require_relative 'models/init'
 
 class FileSharingAPI < Sinatra::Base
 
   before do
-    SimpleFile.setup
+    host_url = "#{request.env['rack.url_scheme']}://#{request.env['HTTP_HOST']}"
+    @request_url = URI.join(host_url, request.path.to_s)
   end
 
   get '/?' do
@@ -17,12 +19,34 @@ class FileSharingAPI < Sinatra::Base
     "Version 1.0 our our api"
   end
 
+  get '/api/v1/users/?' do
+    # TODO return all users' files
+    content_type 'application/json'
+
+    JSON.pretty_generate(data: User.all)
+  end
+
+  get '/api/v1/users/:username' do
+    content_type 'application/json'
+
+    username = params[:username]
+    user = User[username]
+    files = user ? User[username].files : []
+
+    if user
+      JSON.pretty_generate(data: user, relationships: files)
+    else
+      halt 404, "USER NOT FOUND: #{username}"
+    end
+  end
+
+
+
   get '/api/v1/files/?' do
     # TODO return all users' files
     content_type 'application/json'
-    file_list = SimpleFile.all
 
-    { file_list: file_list }.to_json
+    JSON.pretty_generate(data: SimpleFile.all)
   end
 
   get '/api/v1/files/:id.json' do
