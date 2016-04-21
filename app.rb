@@ -111,7 +111,7 @@ class FileSharingAPI < Sinatra::Base
       SimpleFile
         .where(user_id: user_id, id: params[:id])
         .first
-        .base64_document
+        .document
     rescue => e
       status 404
       e.inspect
