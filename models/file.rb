@@ -4,10 +4,21 @@ require 'sequel'
 
 # Holds a full configuration file's information
 class SimpleFile < Sequel::Model
+  include EncryptableModel
   many_to_one :users
   set_allowed_columns :filename, :description, :file_extension, :remark
 
+  def document=(document_plaintext)
+    @document = document_plaintext
+    self.document_encrypted = encrypt(@document)
+  end
+
+  def document
+    @document ||= decrypt(document_encrypted)
+  end
+
   def to_json(options = {})
+    doc = document ? Base64.strict_encode64(document) : nil
     JSON({  type: 'file',
             id: id,
             data: {
@@ -15,18 +26,9 @@ class SimpleFile < Sequel::Model
               description: description,
               file_extension: file_extension,
               remark: remark,
-              base64_document: base64_document
+              base64_document: doc
             }
           },
          options)
   end
-
-  def document
-    Base64.strict_decode64 base64_document
-  end
 end
-
-# TODO: implement a more complex primary key?
-# def new_id
-#   Base64.urlsafe_encode64(Digest::SHA256.digest(Time.now.to_s))[0..9]
-# end
