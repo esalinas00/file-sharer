@@ -4,6 +4,7 @@ gem 'sinatra'
 gem 'thin'
 gem 'json'
 gem 'sequel'
+gem 'rbnacl-libsodium'
 
 group :development do
   gem 'rerun'
@@ -20,4 +21,5 @@ end
 
 group :development, :test do
   gem 'sqlite3'
+  gem 'config_env'
 end
