@@ -39,6 +39,10 @@ $ bundle exec rake spec
 ```
 
 ## Execute
+Initialize the database:
+```
+$ rake db:migrate
+```
 
 Run this API during deployment:
 
