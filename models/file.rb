@@ -5,7 +5,7 @@ require 'sequel'
 # Holds a full configuration file's information
 class SimpleFile < Sequel::Model
   many_to_one :users
-  set_allowed_columns :filename, :description, :base64_document, :file_extension, :remark
+  set_allowed_columns :filename, :description, :file_extension, :remark
 
   def to_json(options = {})
     JSON({  type: 'file',
