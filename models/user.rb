@@ -5,6 +5,7 @@ require 'sequel'
 class User < Sequel::Model
   one_to_many :simple_files
   set_allowed_columns :username, :email
+  plugin :association_dependencies, :simple_files => :delete
 
   def to_json(options = {})
     JSON({  type: 'user',

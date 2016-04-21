@@ -111,7 +111,7 @@ class FileSharingAPI < Sinatra::Base
       SimpleFile
         .where(user_id: user_id, id: params[:id])
         .first
-        .base64_document
+        .document
     rescue => e
       status 404
       e.inspect
@@ -126,9 +126,10 @@ class FileSharingAPI < Sinatra::Base
       new_data = JSON.parse(request.body.read)
       user = User.where(username: username)
                  .first
+      puts new_data
       saved_file = user.add_simple_file(new_data)
     rescue => e
-      logger.info "FAILED to create new config: #{e.inspect}"
+      logger.info "FAILED to create new file: #{e.inspect}"
       halt 400
     end
 
