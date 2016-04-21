@@ -123,10 +123,15 @@ class FileSharingAPI < Sinatra::Base
     # TODO Should upload here
     username = params[:username]
     begin
-      new_data = JSON.parse(request.body.read)
+      # Find a user
       user = User.where(username: username)
                  .first
+
+      new_data = JSON.parse(request.body.read)
+      document_plaintext = new_data.delete('document_plaintext')
       saved_file = user.add_simple_file(new_data)
+      saved_file.document = document_plaintext
+      saved_file.save
     rescue => e
       logger.info "FAILED to create new file: #{e.inspect}"
       halt 400
