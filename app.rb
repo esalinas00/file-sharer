@@ -126,7 +126,6 @@ class FileSharingAPI < Sinatra::Base
       new_data = JSON.parse(request.body.read)
       user = User.where(username: username)
                  .first
-      puts new_data
       saved_file = user.add_simple_file(new_data)
     rescue => e
       logger.info "FAILED to create new file: #{e.inspect}"
