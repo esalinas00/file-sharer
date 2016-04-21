@@ -8,7 +8,7 @@ Sequel.migration do
 
       String :filename, null: false
       String :description
-      String :base64_document, null: false, default: ''
+      String :document_encrypted, text: true
       String :file_extension, null: false, default: ''
       String :remark, null: false, default: 'None'
 
