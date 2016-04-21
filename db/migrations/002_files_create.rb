@@ -13,7 +13,6 @@ Sequel.migration do
       String :remark, null: false, default: 'None'
       String :nonce
 
-      unique [:user_id]
     end
   end
 end
