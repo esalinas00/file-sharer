@@ -4,7 +4,7 @@ Sequel.migration do
   change do
     create_table(:simple_files) do
       primary_key :id
-      foreign_key :user_id
+      foreign_key :account_id
 
       String :filename, null: false
       String :description
