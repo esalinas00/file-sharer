@@ -13,7 +13,7 @@ Sequel.migration do
       DateTime :created_at
       DateTime :updated_at
 
-      unique [:folder_id]
+      unique [:folder_id, :filename]
     end
   end
 end
