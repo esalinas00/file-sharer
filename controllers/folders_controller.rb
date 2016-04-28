@@ -6,7 +6,7 @@ class FileSharingAPI < Sinatra::Base
     folder = Folder[id]
     files = folder ? Folder[id].simple_files : []
 
-    if project
+    if folder
       JSON.pretty_generate(data: folder, relationships: files)
     else
       halt 404, "FOLDER NOT FOUND: #{id}"
