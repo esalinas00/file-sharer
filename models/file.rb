@@ -7,8 +7,10 @@ class SimpleFile < Sequel::Model
   include SecureModel
   plugin :uuid, field: :id
 
-  many_to_one :folders
+  plugin :timestamps, update_on_create: true
   set_allowed_columns :filename
+
+  many_to_one :folders
 
   def document=(doc_plaintext)
     self.document_encrypted = encrypt(doc_plaintext) if doc_plaintext
