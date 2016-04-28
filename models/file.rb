@@ -2,19 +2,28 @@ require 'json'
 require 'base64'
 require 'sequel'
 
-# Holds a full configuration file's information
+# Holds a full file file's information
 class SimpleFile < Sequel::Model
-  include EncryptableModel
-  many_to_one :users
-  set_allowed_columns :filename, :description, :file_extension, :remark
+  include SecureModel
+  plugin :uuid, field: :id
 
-  def document=(document_plaintext)
-    @document = document_plaintext
-    self.document_encrypted = encrypt(@document)
+  many_to_one :folders
+  set_allowed_columns :filename
+
+  def document=(doc_plaintext)
+    self.document_encrypted = encrypt(doc_plaintext) if doc_plaintext
   end
 
   def document
-    @document ||= decrypt(document_encrypted)
+    decrypt(document_encrypted)
+  end
+
+  def description=(desc_plaintext)
+    self.description_encrypted = encrypt(desc_plaintext) if desc_plaintext
+  end
+
+  def description
+    decrypt(description_encrypted)
   end
 
   def to_json(options = {})
@@ -22,11 +31,10 @@ class SimpleFile < Sequel::Model
     JSON({  type: 'file',
             id: id,
             data: {
-              file_name: filename,
+              filename: filename,
               description: description,
-              file_extension: file_extension,
-              remark: remark,
-              base64_document: doc
+              checksum: checksum,
+              document_base64: doc
             }
           },
          options)
