@@ -8,6 +8,10 @@ class FileSharingAPI < Sinatra::Base
     @request_url = URI.join(host_url, request.path.to_s)
   end
 
+  configure :production, :development do
+    enable :logging
+  end
+
   get '/?' do
     "File Sharer Webservice is up and running at api/v1"
   end
