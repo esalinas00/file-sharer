@@ -8,13 +8,13 @@ class Folder < Sequel::Model
   plugin :timestamps, update_on_create: true
   set_allowed_columns :name
 
-  one_to_many :configurations
+  one_to_many :simple_files
   many_to_one :owner, class: :Account
-  many_to_many :contributors,
+  many_to_many :collaborator,
                class: :Account, join_table: :accounts_folders,
                left_key: :folder_id, right_key: :collaborator_id
 
-  plugin :association_dependencies, configurations: :destroy
+  plugin :association_dependencies, simple_files: :destroy
 
   def before_destroy
     DB[:accounts_folders].where(folder_id: id).delete
