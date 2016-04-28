@@ -13,5 +13,12 @@ def app
 end
 
 def invalid_id(resource)
-  (resource.max(:id) || 0) + 1
+  case [resource]
+  when [Folder]
+    (resource.max(:id) || 0) + 1
+  when [SimpleFile]
+    SecureRandom.uuid
+  else
+    raise "INVALID_ID: unknown primary key for #{resource}"
+  end
 end

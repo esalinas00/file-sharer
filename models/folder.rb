@@ -10,7 +10,7 @@ class Folder < Sequel::Model
 
   one_to_many :simple_files
   many_to_one :owner, class: :Account
-  many_to_many :collaborator,
+  many_to_many :collaborators,
                class: :Account, join_table: :accounts_folders,
                left_key: :folder_id, right_key: :collaborator_id
 
