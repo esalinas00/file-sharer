@@ -4,20 +4,22 @@ describe 'Testing Project resource routes' do
   before do
     Account.dataset.delete
     SimpleFile.dataset.delete
+    Folder.dataset.delete
+
   end
 
-  describe 'Creating new users' do
-    it 'HAPPY: should create a new unique user' do
+  describe 'Creating new account' do
+    it 'HAPPY: should create a new unique account' do
       req_header = { 'CONTENT_TYPE' => 'application/json' }
-      req_body = { username: 'JohnDoe', email: 'demo@gmail.com'}.to_json
-      post '/api/v1/account/', req_body, req_header
+      req_body = { username: 'JohnDoe', email: 'demo@gmail.com', password:'1234'}.to_json
+      post '/api/v1/accounts/', req_body, req_header
       _(last_response.status).must_equal 201
       _(last_response.location).must_match(%r{http://})
     end
 
     it 'SAD: should not create users with duplicate names' do
       req_header = { 'CONTENT_TYPE' => 'application/json' }
-      req_body = { username: 'JohnDoe' }.to_json
+      req_body = { username: 'JohnDoe', email: 'demo@gmail.com', password:'1234' }.to_json
       post '/api/v1/account/', req_body, req_header
       post '/api/v1/account/', req_body, req_header
       _(last_response.status).must_equal 400
@@ -25,18 +27,32 @@ describe 'Testing Project resource routes' do
     end
   end
 
-  describe 'Finding existing users' do
-    it 'HAPPY: should find an existing user' do
-      new_user = Account.create(username: 'JohnDoe', email: "JohnDoe@gmail.com")
+  describe 'Testing unit level properties of accounts' do
+    before do
+      @original_password = 'mypassword'
+      @account = CreateNewAccount.call(
+        username: 'soumya.ray',
+        email: 'sray@nthu.edu.tw',
+        password: @original_password)
+    end
+
+    it 'HAPPY: should hash the password' do
+      _(@account.password_hash).wont_equal @original_password
+    end
+
+    it 'HAPPY: should re-salt the password' do
+      hashed = @account.password_hash
+      @account.password = @original_password
+      @account.save
+      _(@account.password_hash).wont_equal hashed
+    end
+  end
+
+  describe 'Finding existing account' do
+    it 'HAPPY: should find an existing account' do
+      new_user = Account.create(username: 'JohnDoe', email: "JohnDoe@gmail.com", password: "password")
 
       new_files = (1..3).map do |i|
-        f = {
-          filename: "random_file#{i}.rb",
-          description: "test string#{i}",
-          base64_document: "+#{i}=",
-          file_extension: "rb",
-          remark: "good"
-        }
         new_user.add_simple_file(f)
       end
 
@@ -50,18 +66,18 @@ describe 'Testing Project resource routes' do
       end
     end
 
-    it 'SAD: should not find non-existent users' do
-      get "/api/v1/account/#{invalid_id(User)}"
+    it 'SAD: should not find non-existent account' do
+      get "/api/v1/account/#{invalid_id(Account)}"
       _(last_response.status).must_equal 404
     end
   end
 
-  describe 'Getting an index of existing users' do
-    it 'HAPPY: should find list of existing users' do
-      (1..5).each { |i| Account.create(username: "JaneDoe#{i}", email: "JaneDoe#{i}@gmail.com") }
-      result = get '/api/v1/account'
-      users = JSON.parse(result.body)
-      _(users['data'].count).must_equal 5
-    end
-  end
+  # describe 'Getting an index of existing users' do
+  #   it 'HAPPY: should find list of existing users' do
+  #     (1..5).each { |i| Account.create(username: "JaneDoe#{i}", email: "JaneDoe#{i}@gmail.com") }
+  #     result = get '/api/v1/account'
+  #     users = JSON.parse(result.body)
+  #     _(users['data'].count).must_equal 5
+  #   end
+  # end
 end
