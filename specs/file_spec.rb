@@ -2,58 +2,53 @@ require_relative './spec_helper'
 
 describe 'Testing File resource routes' do
   before do
-    User.dataset.delete
-    SimpleFile.dataset.delete
+    Folder.dataset.destroy
+    SimpleFile.dataset.destroy
   end
 
-  describe 'Creating new file for user' do
-    it 'HAPPY: should add a new file for an existing user' do
-      existing_user = User.create(username: 'tester')
+  describe 'Creating new configurations for projects' do
+    it 'HAPPY: should add a new configuration for an existing project' do
+      existing_folder = Folder.create(name: 'Demo folder')
 
       req_header = { 'CONTENT_TYPE' => 'application/json' }
-      req_body = {
-        filename: 'Demo Configuration',
-        description: 'test description',
-        base64_document: 'test document',
-        file_extension: 'test extension',
-        remark: 'test remark',
-
-       }.to_json
-      post "/api/v1/users/#{existing_user.username}/files",
+      req_body = { filename: 'Demo Configuration' }.to_json
+      post "/api/v1/folders/#{existing_folder.id}/files",
            req_body, req_header
       _(last_response.status).must_equal 201
       _(last_response.location).must_match(%r{http://})
     end
 
-    it 'SAD: should not add a file for non-existant user' do
-      req_header = { 'CONTENT_TYPE' => 'application/json' }
-      req_body = {
-        filename: 'Demo Configuration',
-        description: 'test description',
-        base64_document: 'test document',
-        file_extension: 'test extension',
-        remark: 'test remark',
+    it 'HAPPY: should encrypt relevant data' do
+      original_doc = "---\ntest: 'testing'\ndata: [1, 2, 3]"
+      original_desc = 'test description text'
 
-       }.to_json
-      post "/api/v1/users/#{invalid_id(User)}/files",
+      config = SimpleFile.new(filename: 'Secret folder')
+      config.document = original_doc
+      config.description = original_desc
+      config.save
+      id = config.id
+
+      _(SimpleFile[id].document).must_equal original_doc
+      _(SimpleFile[id].document_encrypted).wont_equal original_doc
+      _(SimpleFile[id].description).must_equal original_desc
+      _(SimpleFile[id].description_encrypted).wont_equal original_desc
+    end
+
+    it 'SAD: should not add a configuration for non-existant project' do
+      req_header = { 'CONTENT_TYPE' => 'application/json' }
+      req_body = { filename: 'Demo Configuration' }.to_json
+      post "/api/v1/folders/#{invalid_id(Folder)}/files",
            req_body, req_header
       _(last_response.status).must_equal 400
       _(last_response.location).must_be_nil
     end
 
-    it 'SAD: should catch duplicate files within a user' do
-      existing_user = User.create(username: 'tester')
+    it 'SAD: should catch duplicate config files within a project' do
+      existing_folder = Folder.create(name: 'Demo folder')
 
       req_header = { 'CONTENT_TYPE' => 'application/json' }
-      req_body = {
-        filename: 'Demo Configuration',
-        description: 'test description',
-        base64_document: 'test document',
-        file_extension: 'test extension',
-        remark: 'test remark',
-
-       }.to_json
-      url = "/api/v1/users/#{existing_user.username}/files"
+      req_body = { filename: 'Demo Configuration' }.to_json
+      url = "/api/v1/folders/#{existing_folder.id}/files"
       post url, req_body, req_header
       post url, req_body, req_header
       _(last_response.status).must_equal 400
@@ -63,34 +58,25 @@ describe 'Testing File resource routes' do
 
   describe 'Getting files' do
     it 'HAPPY: should find existing file' do
-      f = {
-        filename: 'Demo Configuration',
-        description: 'test description',
-        base64_document: 'test document',
-        file_extension: 'test extension',
-        remark: 'test remark',
-
-       }
-      file = User.create(username: 'tester', email: 'test@gmail.com')
-                 .add_simple_file(f)
-
-      get "/api/v1/users/tester/files/#{file.id}.json"
+      folder = Folder.create(name: 'Demo_Folder')
+                     .add_simple_file(filename: 'demo_config.rb')
+      get "/api/v1/folders/#{folder.folder_id}/files/#{folder.id}"
       _(last_response.status).must_equal 200
-      parsed_config = JSON.parse(last_response.body)['data']['file']
-      _(parsed_config['type']).must_equal 'file'
+      parsed_file = JSON.parse(last_response.body)['data']['file']
+      _(parsed_file['type']).must_equal 'file'
     end
 
-    it 'SAD: should not find non-existant file and user' do
-      username = invalid_id(User)
+    it 'SAD: should not find non-existant folder and file' do
+      fold_id = invalid_id(Folder)
       file_id = invalid_id(SimpleFile)
-      get "/api/v1/users/#{username}/files/#{file_id}"
+      get "/api/v1/folders/#{fold_id}/files/#{file_id}"
       _(last_response.status).must_equal 404
     end
 
-    it 'SAD: should not find non-existant file for existing user' do
-      username = User.create(username: 'tester', email:'test@gmail.com').id
+    it 'SAD: should not find non-existant file for existing folder' do
+      fold_id = Folder.create(name: 'Demo folder').id
       file_id = invalid_id(SimpleFile)
-      get "/api/v1/users/#{username}/files/#{file_id}"
+      get "/api/v1/folders/#{fold_id}/files/#{file_id}"
       _(last_response.status).must_equal 404
     end
   end
