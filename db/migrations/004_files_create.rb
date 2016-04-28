@@ -9,7 +9,7 @@ Sequel.migration do
       String :filename, null: false
       String :description_encrypted, text: true
       String :document_encrypted, text: true
-      String :checksum, unique: true, null: false
+      String :checksum, unique: true, text: true
       DateTime :created_at
       DateTime :updated_at
 
