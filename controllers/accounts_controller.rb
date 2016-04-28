@@ -60,7 +60,7 @@ class FileSharingAPI < Sinatra::Base
 
       my_folders = Folder.where(owner_id: account.id).all
       other_folders = Folder.join(:accounts_folders, folder_id: :id)
-                              .where(contributor_id: account.id).all
+                            .where(collaborator_id: account.id).all
 
       all_folders = my_folders + other_folders
       JSON.pretty_generate(data: all_folders)
