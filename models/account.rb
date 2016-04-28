@@ -7,10 +7,14 @@ require 'json'
 class Account < Sequel::Model
   include SecureModel
   plugin :timestamps, update_on_create: true
-  one_to_many :simple_files
   set_allowed_columns :username, :email
 
-  plugin :association_dependencies, owned_projects: :destroy
+  one_to_many :owned_folders, class: :Folder, key: :owner_id
+  many_to_many :folders,
+               join_table: :accounts_folders,
+               left_key: :collaborator_id, right_key: :folder_id
+
+  plugin :association_dependencies, owned_folders: :destroy
 
   def password=(new_password)
     nacl = RbNaCl::Random.random_bytes(RbNaCl::PasswordHash::SCrypt::SALTBYTES)

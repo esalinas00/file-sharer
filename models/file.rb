@@ -5,8 +5,10 @@ require 'sequel'
 # Holds a full file file's information
 class SimpleFile < Sequel::Model
   include SecureModel
-  many_to_one :users
-  set_allowed_columns :filename, :description, :file_extension, :remark
+  plugin :uuid, field: :id
+
+  many_to_one :folders
+  set_allowed_columns :filename
 
   def document=(doc_plaintext)
     self.document_encrypted = encrypt(doc_plaintext) if doc_plaintext
@@ -29,11 +31,11 @@ class SimpleFile < Sequel::Model
     JSON({  type: 'file',
             id: id,
             data: {
-              file_name: filename,
+              filename: filename,
               description: description,
-              file_extension: file_extension,
-              remark: remark,
-              base64_document: doc
+              document_encrypted: document_encrypted,
+              checksum: checksum,
+              document_base64: doc
             }
           },
          options)
