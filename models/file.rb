@@ -33,7 +33,6 @@ class SimpleFile < Sequel::Model
             data: {
               filename: filename,
               description: description,
-              document_encrypted: document_encrypted,
               checksum: checksum,
               document_base64: doc
             }
