@@ -12,4 +12,16 @@ class FileSharingAPI < Sinatra::Base
       halt 404, "FOLDER NOT FOUND: #{id}"
     end
   end
+
+  post '/api/v1/folders/:folder_id/collaborator/:username' do
+    begin
+      result = AddCollaboratorForFolder.call(
+        account: Account.where(username: params[:username]).first,
+        folder: Folder.where(id: params[:folder_id]).first)
+      status result ? 201 : 403
+    rescue => e
+      logger.info "FAILED to add collaborator to folder: #{e.inspect}"
+      halt 400
+    end
+  end
 end
