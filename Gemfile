@@ -7,6 +7,7 @@ gem 'sequel'
 gem 'rbnacl-libsodium'
 gem 'tux'
 gem 'hirb'
+gem 'config_env'
 
 group :development do
   gem 'rerun'
@@ -21,7 +22,6 @@ end
 
 group :development, :test do
   gem 'sqlite3'
-  gem 'config_env'
 end
 
 group :production do
