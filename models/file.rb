@@ -4,7 +4,6 @@ require 'sequel'
 
 # Holds a full file file's information
 class SimpleFile < Sequel::Model
-  include SecureModel
   plugin :uuid, field: :id
 
   plugin :timestamps, update_on_create: true

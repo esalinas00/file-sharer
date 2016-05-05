@@ -5,7 +5,6 @@ require 'json'
 
 # Holds a User's information
 class Account < Sequel::Model
-  include SecureModel
   plugin :timestamps, update_on_create: true
   set_allowed_columns :username, :email
 
