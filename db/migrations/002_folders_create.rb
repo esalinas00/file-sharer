@@ -5,10 +5,12 @@ Sequel.migration do
     create_table(:folders) do
       primary_key :id
       foreign_key :owner_id, :accounts
-      String :name, unique: true, null: false
+      String :name, null: false
       String :folder_url_encrypted, unique: true
       DateTime :created_at
       DateTime :updated_at
+
+      unique [:owner_id, :name]
     end
   end
 end
