@@ -22,11 +22,11 @@ class Folder < Sequel::Model
   end
 
   def folder_url
-    decrypt(folder_url_encrypted)
+    SecureDB.decrypt(folder_url_encrypted)
   end
 
   def folder_url=(folder_url_plaintext)
-    self.folder_url_encrypted = encrypt(folder_url_plaintext) if folder_url_plaintext
+    self.folder_url_encrypted = SecureDB.encrypt(folder_url_plaintext) if folder_url_plaintext
   end
 
   def to_json(options = {})

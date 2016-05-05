@@ -1,1 +1,6 @@
-require_relative 'create_new_user'
+require_relative 'create_account'
+require_relative 'create_folder_for_owner'
+require_relative 'create_file_for_folder'
+require_relative 'add_collaborator_for_folder'
+require_relative 'find_all_account_folders'
+require_relative 'find_and_authenticate_account'

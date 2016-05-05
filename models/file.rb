@@ -13,19 +13,19 @@ class SimpleFile < Sequel::Model
   many_to_one :folders
 
   def document=(doc_plaintext)
-    self.document_encrypted = encrypt(doc_plaintext) if doc_plaintext
+    self.document_encrypted = SecureDB.encrypt(doc_plaintext) if doc_plaintext
   end
 
   def document
-    decrypt(document_encrypted)
+    SecureDB.decrypt(document_encrypted)
   end
 
   def description=(desc_plaintext)
-    self.description_encrypted = encrypt(desc_plaintext) if desc_plaintext
+    self.description_encrypted = SecureDB.encrypt(desc_plaintext) if desc_plaintext
   end
 
   def description
-    decrypt(description_encrypted)
+    SecureDB.decrypt(description_encrypted)
   end
 
   def to_json(options = {})
