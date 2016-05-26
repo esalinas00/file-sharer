@@ -1,4 +1,5 @@
-source "https://rubygems.org"
+source 'https://rubygems.org'
+ruby '2.2.5'
 
 gem 'sinatra'
 gem 'thin'
@@ -7,7 +8,8 @@ gem 'sequel'
 gem 'rbnacl-libsodium'
 gem 'tux'
 gem 'hirb'
-gem 'config_env'
+gem 'rack-ssl-enforcer'
+gem 'jose'
 
 group :development do
   gem 'rerun'
@@ -22,6 +24,7 @@ end
 
 group :development, :test do
   gem 'sqlite3'
+  gem 'config_env'
 end
 
 group :production do
