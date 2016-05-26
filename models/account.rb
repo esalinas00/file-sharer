@@ -3,7 +3,7 @@ require 'rbnacl/libsodium'
 require 'base64'
 require 'json'
 
-# Holds a User's information
+# Holds and persists an account's information
 class Account < Sequel::Model
   plugin :timestamps, update_on_create: true
   set_allowed_columns :username, :email
@@ -29,6 +29,7 @@ class Account < Sequel::Model
 
   def to_json(options = {})
     JSON({  type: 'account',
+            id: id,
             username: username,
             email: email
           },
