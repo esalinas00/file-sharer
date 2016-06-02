@@ -9,13 +9,13 @@ class Folder < Sequel::Model
   one_to_many :simple_files
   many_to_one :owner, class: :Account
   many_to_many :collaborators,
-               class: :Account, join_table: :accounts_folders,
+               class: :Account, join_table: :base_accounts_folders,
                left_key: :folder_id, right_key: :collaborator_id
 
   plugin :association_dependencies, simple_files: :destroy
 
   def before_destroy
-    DB[:accounts_folders].where(folder_id: id).delete
+    DB[:base_accounts_folders].where(folder_id: id).delete
     super
   end
 
