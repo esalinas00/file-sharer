@@ -11,7 +11,7 @@ class BaseAccount < Sequel::Model
 
   one_to_many :owned_folders, class: :Folder, key: :owner_id
   many_to_many :folders,
-               join_table: :accounts_folders,
+               join_table: :base_accounts_folders,
                left_key: :collaborator_id, right_key: :folder_id
 
   plugin :association_dependencies, owned_folders: :destroy
