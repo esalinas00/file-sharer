@@ -9,7 +9,7 @@ class FileSharingAPI < Sinatra::Base
       all_folders = FindAllAccountFolders.call(id: id)
       JSON.pretty_generate(data: all_folders)
     rescue => e
-      llogger.info "FAILED to find folders for user: #{e}"
+      logger.info "FAILED to find folders for user: #{e}"
       halt 404
     end
   end
