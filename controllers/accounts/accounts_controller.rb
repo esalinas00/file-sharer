@@ -1,4 +1,18 @@
 class FileSharingAPI < Sinatra::Base
+  get '/api/v1/accounts/:username' do
+    content_type 'application/json'
+
+    username = params[:username]
+    account = Account.where(username: username).first
+
+    if account
+      id = account.id
+      JSON.pretty_generate(id: id)
+    else
+      halt 404, "USER ID NOT FOUND: #{username}"
+    end
+  end
+
   get '/api/v1/accounts/:id' do
     content_type 'application/json'
 
