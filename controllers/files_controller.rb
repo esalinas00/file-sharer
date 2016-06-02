@@ -43,7 +43,9 @@ class FileSharingAPI < Sinatra::Base
     begin
       new_data = JSON.parse(request.body.read)
       folder = Folder[params[:folder_id]]
-      saved_file = folder.add_simple_file(new_data)
+      saved_file = CreateFileForFolder.call(
+        folder: folder, filename: new_data['filename'],
+        description: new_data['description'], document: new_data['document'])
     rescue => e
       logger.info "FAILED to create new file: #{e.inspect}"
       halt 400
