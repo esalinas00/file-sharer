@@ -3,7 +3,7 @@ class FileSharingAPI < Sinatra::Base
     content_type 'application/json'
 
     username = params[:username]
-    account = Account.where(username: username).first
+    account = BaseAccount.where(username: username).first
 
     if account
       id = account.id

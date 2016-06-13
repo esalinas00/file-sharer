@@ -12,7 +12,7 @@ class FileSharingAPI < Sinatra::Base
     folder_id = params[:id]
     folder = affiliated_folder(env, folder_id)
     halt(401, 'Not authorized, or folder might not exist') unless folder
-    JSON.pretty_generate(data: folder, relationships: folder.configurations)
+    JSON.pretty_generate(data: folder, relationships: folder.simple_files)
   end
 
   post '/api/v1/folders/:folder_id/collaborator/:collaborator_id' do
