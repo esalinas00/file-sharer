@@ -15,17 +15,22 @@ class FileSharingAPI < Sinatra::Base
     JSON.pretty_generate(data: folder, relationships: folder.simple_files)
   end
 
-  post '/api/v1/folders/:folder_id/collaborator/:collaborator_id' do
+  post '/api/v1/folders/:folder_id/collaborators/?' do
+    content_type 'application/json'
     begin
-      collaborator_id = params[:collaborator_id]
+      criteria = JSON.parse request.body.read
+      collaborator = FindBaseAccountByEmail.call(criteria['email'])
+
+      # collaborator_id = params[:collaborator_id]
       folder_id = params[:folder_id]
-      result = AddCollaboratorForFolder.call(
-        collaborator_id: collaborator_id,
+      collaborator = AddCollaboratorForFolder.call(
+        collaborator_id: collaborator.id,
         folder_id: folder_id)
-      status result ? 201 : 403
+      collaborator ? status(201) : raise('Could not add collaborator')
     rescue => e
       logger.info "FAILED to add collaborator to folder: #{e.inspect}"
       halt 400
     end
+    collaborator.to_json
   end
 end

@@ -17,7 +17,7 @@ class BaseAccount < Sequel::Model
   plugin :association_dependencies, owned_folders: :destroy
 
   def to_json(options = {})
-    JSON({  type: 'account',
+    JSON({  type: type,
             id: id,
             username: username,
             email: email
