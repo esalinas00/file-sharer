@@ -35,7 +35,8 @@ class SimpleFile < Sequel::Model
               filename: filename,
               description: description,
               checksum: checksum,
-              document_base64: doc
+              document_base64: doc,
+              document: document
             }
           },
          options)
