@@ -21,12 +21,14 @@ class FileSharingAPI < Sinatra::Base
     begin
       criteria = JSON.parse request.body.read
       collaborator = FindBaseAccountByEmail.call(criteria['email'])
+      folder = authorized_affiliated_folder(env, params[:folder_id])
+      raise('Unauthorized or not found') unless folder && collaborator
 
       # collaborator_id = params[:collaborator_id]
-      folder_id = params[:folder_id]
+      # folder_id = params[:folder_id]
       collaborator = AddCollaboratorForFolder.call(
         collaborator_id: collaborator.id,
-        folder_id: folder_id)
+        folder_id: folder.id)
       collaborator ? status(201) : raise('Could not add collaborator')
     rescue => e
       logger.info "FAILED to add collaborator to folder: #{e.inspect}"
