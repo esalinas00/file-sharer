@@ -9,7 +9,7 @@ class Folder < Sequel::Model
   one_to_many :simple_files
   many_to_one :owner, class: :BaseAccount
   many_to_many :collaborators,
-               class: :Account, join_table: :base_accounts_folders,
+               class: :BaseAccount, join_table: :base_accounts_folders,
                left_key: :folder_id, right_key: :collaborator_id
 
   plugin :association_dependencies, simple_files: :destroy
