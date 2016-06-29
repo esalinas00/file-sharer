@@ -39,6 +39,11 @@ class Account < BaseAccount
     try_hashed = SecureDB.hash_password(salt, try_password)
     try_hashed == password_hash
   end
+
+  def public_key=(public_key)
+    pk_encrypted = SecureDB.encrypt(public_key)
+    self.public_key = pk_encrypted
+  end
 end
 
 # SSO accounts without passwords
