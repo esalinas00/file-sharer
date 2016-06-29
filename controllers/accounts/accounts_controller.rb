@@ -47,42 +47,19 @@ class FileSharingAPI < Sinatra::Base
     headers('Location' => new_location)
   end
 
-  # post '/api/v1/accounts/:username/folders/?' do
-  #   begin
-  #     username = params[:username]
-  #     new_data = JSON.parse(request.body.read)
-  #
-  #     account = Account.where(username: username).first
-  #     saved_folder = account.add_owned_folder(name: new_data['name'])
-  #     saved_folder.folder_url = new_data['folder_url'] if new_data['folder_url']
-  #     saved_folder.save
-  #   rescue => e
-  #     logger.info "FAILED to create new folder: #{e.inspect}"
-  #     halt 400
-  #   end
-  #
-  #   new_location = URI.join(@request_url.to_s + '/', saved_folder.id.to_s).to_s
-  #
-  #   status 201
-  #   headers('Location' => new_location)
-  # end
-  #
-  # get '/api/v1/accounts/:username/folders/?' do
-  #   content_type 'application/json'
-  #
-  #   begin
-  #     username = params[:username]
-  #     account = Account.where(username: username).first
-  #
-  #     my_folders = Folder.where(owner_id: account.id).all
-  #     other_folders = Folder.join(:accounts_folders, folder_id: :id)
-  #                           .where(collaborator_id: account.id).all
-  #
-  #     all_folders = my_folders + other_folders
-  #     JSON.pretty_generate(data: all_folders)
-  #   rescue => e
-  #     logger.info "FAILED to get folders for #{username}: #{e}"
-  #     halt 404
-  #   end
-  # end
+  post '/api/v1/accounts/:id/pk/?' do
+    content_type 'application/json'
+    begin
+      new_data = JSON.parse(request.body.read)
+      saved_pk = ImportPK.call(
+        account_id: params[:id],
+        pk: new_data['document'])
+    rescue => e
+      logger.info "FAILED to import new file: #{e.inspect}"
+      halt 400
+    end
+
+    status 201
+    saved_file.to_json
+  end
 end

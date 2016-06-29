@@ -10,3 +10,5 @@
 config/config_env.rb
 db/*.*
 .bundle/
+.ruby-version
+input.txt
