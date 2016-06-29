@@ -24,6 +24,15 @@ class BaseAccount < Sequel::Model
           },
          options)
   end
+
+  def pk=(public_key)
+    pk_encrypted = SecureDB.encrypt(public_key)
+    self.public_key = pk_encrypted
+  end
+
+  def pk
+    pk = SecureDB.decrypt(public_key)
+  end
 end
 
 # Regular accounts with full credentials
@@ -40,10 +49,7 @@ class Account < BaseAccount
     try_hashed == password_hash
   end
 
-  def public_key=(public_key)
-    pk_encrypted = SecureDB.encrypt(public_key)
-    self.public_key = pk_encrypted
-  end
+
 end
 
 # SSO accounts without passwords

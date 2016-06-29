@@ -53,13 +53,13 @@ class FileSharingAPI < Sinatra::Base
       new_data = JSON.parse(request.body.read)
       saved_pk = ImportPK.call(
         account_id: params[:id],
-        pk: new_data['document'])
+        pk: new_data['public_key'])
     rescue => e
       logger.info "FAILED to import new file: #{e.inspect}"
       halt 400
     end
 
     status 201
-    saved_file.to_json
+    saved_pk.to_json
   end
 end
