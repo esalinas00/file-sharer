@@ -26,12 +26,16 @@ class BaseAccount < Sequel::Model
   end
 
   def pk=(public_key)
-    pk_encrypted = SecureDB.encrypt(public_key)
-    self.public_key = pk_encrypted
+    if public_key
+      pk_encrypted = SecureDB.encrypt(public_key)
+      public_key = pk_encrypted
+    end
   end
 
-  def pk
-    pk = SecureDB.decrypt(public_key)
+  def pk?
+    if public_key
+      pk = SecureDB.decrypt(public_key)
+    end
   end
 end
 

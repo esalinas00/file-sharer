@@ -30,6 +30,7 @@ class RetrieveSsoAccount
   end
 
   def self.find_or_create_sso_account(github_account)
+    puts github_account
     SsoAccount.first(github_account) || SsoAccount.create(github_account)
   end
 end

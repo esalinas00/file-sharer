@@ -7,7 +7,7 @@ class FileSharingAPI < Sinatra::Base
     account = BaseAccount.where(id: id).first
 
     if account
-      JSON.pretty_generate(account: account.to_json, public_key: account.pk)
+      JSON.pretty_generate(account: account.to_json, public_key: account.pk?)
     else
       halt 404, "FOLDER NOT FOUND: #{id}"
     end
