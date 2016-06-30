@@ -7,6 +7,14 @@ class FileSharingAPI < Sinatra::Base
     JSON.pretty_generate(data: folder.simple_files)
   end
 
+  get '/api/v1/foldersByName/:name/files/?' do
+    content_type 'application/json'
+
+    folder = Folder.where(name: params[:name]).first
+
+    JSON.pretty_generate(data: folder.simple_files)
+  end
+
   get '/api/v1/folders/:folder_id/files/:id/?' do
     content_type 'application/json'
 
@@ -31,6 +39,20 @@ class FileSharingAPI < Sinatra::Base
 
     begin
       SimpleFile.where(folder_id: params[:folder_id], id: params[:id])
+                .first
+                .document
+    rescue => e
+      status 404
+      e.inspect
+    end
+  end
+
+  get '/api/v1/foldersByName/:folder_name/filesByName/:name/document' do
+    content_type 'text/plain'
+
+    begin
+      folder_id = Folder.where(name: params[:folder_name]).first.id
+      SimpleFile.where(folder_id: folder_id, filename: params[:name])
                 .first
                 .document
     rescue => e
