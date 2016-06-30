@@ -34,6 +34,26 @@ class FileSharingAPI < Sinatra::Base
     end
   end
 
+  get '/api/v1/foldersByName/:folder_name/filesByName/:name/?' do
+    content_type 'application/json'
+
+    begin
+      doc_url = URI.join(@request_url.to_s + '/', 'document')
+      folder_id = Folder.where(name: params[:folder_name]).first.id
+      file = SimpleFile.where(folder_id: folder_id, name: params[:name)
+                       .first
+      halt(404, 'Files not found') unless file
+      JSON.pretty_generate(data: {
+                             file: file,
+                             links: { document: doc_url }
+                           })
+    rescue => e
+      status 400
+      logger.info "FAILED to process GET file request: #{e.inspect}"
+      e.inspect
+    end
+  end
+
   get '/api/v1/folders/:folder_id/files/:id/document' do
     content_type 'text/plain'
 
