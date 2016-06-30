@@ -86,26 +86,7 @@ class FileSharingAPI < Sinatra::Base
     # folder = authorized_affiliated_folder(env, params[:folder_id])
     begin
       new_data = JSON.parse(request.body.read)
-      folder = Folder[params[:folder_id]]
-      saved_file = CreateFileForFolder.call(
-        folder: folder,
-        filename: new_data['filename'],
-        description: new_data['description'],
-        document: new_data['document'])
-    rescue => e
-      logger.info "FAILED to create new file: #{e.inspect}"
-      halt 400
-    end
-
-    status 201
-    saved_file.to_json
-  end
-
-  post '/api/v1/folders/:folder_id/files/?' do
-    content_type 'application/json'
-    # folder = authorized_affiliated_folder(env, params[:folder_id])
-    begin
-      new_data = JSON.parse(request.body.read)
+      puts new_data
       folder = Folder[params[:folder_id]]
       saved_file = CreateFileForFolder.call(
         folder: folder,
@@ -123,9 +104,12 @@ class FileSharingAPI < Sinatra::Base
 
   post '/api/v1/foldersByName/:folder_name/files/?' do
     content_type 'application/json'
+    puts 'values'
+
     # folder = authorized_affiliated_folder(env, params[:folder_id])
     begin
       new_data = JSON.parse(request.body.read)
+      puts new_data
       folder = Folder.where(name: params[:folder_name]).first
       saved_file = CreateFileForFolder.call(
         folder: folder,
