@@ -7,10 +7,27 @@ class FileSharingAPI < Sinatra::Base
     nil
   end
 
+  def authorized_affiliated_folderByName(env, folder_name)
+    account = authenticated_account(env)
+    all_folders = FindAllAccountFolders.call(id: account['id'])
+    all_folders.select { |proj| proj.name == folder_name }.first
+  rescue
+    nil
+  end
+
   get '/api/v1/folders/:id' do
     content_type 'application/json'
     folder_id = params[:id]
-    folder = authorized_affiliated_folder(env, folder_id)
+    folder = authorized_affiliated_folder(env, folder_name)
+    halt(401, 'Not authorized, or folder might not exist') unless folder
+    folder.to_full_json
+    # JSON.pretty_generate(data: folder, relationships: folder.simple_files)
+  end
+
+  get '/api/v1/foldersByName/:name' do
+    content_type 'application/json'
+    folder_name = params[:name]
+    folder = authorized_affiliated_folderByName(env, folder_name)
     halt(401, 'Not authorized, or folder might not exist') unless folder
     folder.to_full_json
     # JSON.pretty_generate(data: folder, relationships: folder.simple_files)
