@@ -40,7 +40,7 @@ class FileSharingAPI < Sinatra::Base
     begin
       doc_url = URI.join(@request_url.to_s + '/', 'document')
       folder_id = Folder.where(name: params[:folder_name]).first.id
-      file = SimpleFile.where(folder_id: folder_id, name: params[:name])
+      file = SimpleFile.where(folder_id: folder_id, filename: params[:name])
                        .first
       halt(404, 'Files not found') unless file
       JSON.pretty_generate(data: {
