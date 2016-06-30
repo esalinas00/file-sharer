@@ -18,7 +18,7 @@ class FileSharingAPI < Sinatra::Base
   get '/api/v1/folders/:id' do
     content_type 'application/json'
     folder_id = params[:id]
-    folder = authorized_affiliated_folder(env, folder_name)
+    folder = authorized_affiliated_folder(env, folder_id)
     halt(401, 'Not authorized, or folder might not exist') unless folder
     folder.to_full_json
     # JSON.pretty_generate(data: folder, relationships: folder.simple_files)
